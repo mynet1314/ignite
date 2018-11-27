@@ -8,13 +8,13 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/go-ignite/ignite/models"
-	"github.com/go-ignite/ignite/ss"
-	"github.com/go-ignite/ignite/utils"
+	"github.com/mynet1314/nlan/models"
+	"github.com/mynet1314/nlan/ss"
+	"github.com/mynet1314/nlan/utils"
 )
 
 var (
-	servers          = []string{"SS", "SSR"}
+	servers          = []string{"SSR"}
 	ssMethods        = []string{"aes-256-cfb", "aes-128-gcm", "aes-192-gcm", "aes-256-gcm", "chacha20-ietf-poly1305"}
 	ssrMethods       = []string{"aes-256-cfb", "aes-256-ctr", "chacha20", "chacha20-ietf"}
 	serverMethodsMap = map[string]map[string]bool{}

@@ -1,10 +1,10 @@
 [Unit]
-Description=ignite service
+Description=nlan service
 After=network.target
 
 [Service]
-WorkingDirectory=/path/to/ignite
-ExecStart=/path/to/ignite/executable
+WorkingDirectory=/path/to/nlan
+ExecStart=/path/to/nlan/executable
 User=docker
 Restart=always
 KillMode=process

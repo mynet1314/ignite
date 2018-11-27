@@ -8,16 +8,11 @@
   {{template "nav.html" .}}
 
   <div class="bg-videosnap"></div>
-  <video playsinline autoplay muted loop class="bg-video">
-    <source src="/static/images/helloworld.mp4" type="video/mp4" />Your browser does not support the video tag. I suggest you upgrade your browser.
-    <source src="/static/images/helloworld.webm" type="video/webm" />Your browser does not support the video tag. I suggest you upgrade your browser.
-  </video>
 
   <section class="hero container">
     <div id="hero" class="text-center">
-        <img src="/static/images/favicon-96x96.png" />
-        <h1 class="animated swing delay-1s">ignite<span>V1</span></h1>
-        <p>A dockernized service for <em>SS</em></p>
+        <h1 class="animated swing delay-1s">Nlan<span>V1</span></h1>
+        <p>A dockernized service for <em>SSR</em> and <em>V2ray</em></p>
         <div class="col-md-6 offset-md-3 text-center">
           {{ if not .uInfo }}
           <a href="#" class="signup-btn signup-move">激活账号</a>
@@ -54,8 +49,7 @@
     (function(){
       User.init();
       Header.init();
-      var videoElm = window.os.isPc ? '.bg-video' : '.bg-videosnap';
-      document.querySelector(videoElm).style.display = 'block';
+      document.querySelector('.bg-videosnap').style.display = 'block';
     })()
   </script>
 </body>

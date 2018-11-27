@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/go-ignite/ignite/models"
+	"github.com/mynet1314/nlan/models"
 )
 
 func (router *MainRouter) IndexHandler(c *gin.Context) {

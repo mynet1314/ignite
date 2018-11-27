@@ -3,9 +3,9 @@ address = ":5000"
 
 [db]
 #driver = "mysql"
-#connect = "root:@tcp(localhost:3306)/ignite?charset=utf8"
+#connect = "root:@tcp(localhost:3306)/nlan?charset=utf8"
 driver = "sqlite3"
-connect = "./data/ignite.db"
+connect = "./data/nlan.db"
 
 [host]
 address = "localhost"

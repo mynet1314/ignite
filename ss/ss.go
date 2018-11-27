@@ -10,13 +10,13 @@ import (
 	"time"
 
 	docker "github.com/fsouza/go-dockerclient"
-	"github.com/go-ignite/ignite/models"
-	"github.com/go-ignite/ignite/utils"
+	"github.com/mynet1314/nlan/models"
+	"github.com/mynet1314/nlan/utils"
 )
 
 const (
-	SS_IMAGE  = "goignite/ss-libev:latest"
-	SSR_IMAGE = "goignite/ssr:latest"
+	SS_IMAGE  = "mynet1314/ss-libev:latest"
+	SSR_IMAGE = "mynet1314/ssr:latest"
 )
 
 var (
@@ -29,7 +29,7 @@ func init() {
 	var err error
 	client, err = docker.NewClientFromEnv()
 	if err != nil {
-		log.Fatalln("ignite require Docker installed")
+		log.Fatalln("nlan require Docker installed")
 	}
 }
 

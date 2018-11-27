@@ -6,9 +6,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/go-ignite/ignite/ss"
-	"github.com/go-ignite/ignite/utils"
 	"github.com/go-xorm/xorm"
+	"github.com/mynet1314/nlan/ss"
+	"github.com/mynet1314/nlan/utils"
 )
 
 type MainRouter struct {
@@ -22,7 +22,7 @@ func (self *MainRouter) Initialize(r *gin.Engine) {
 
 	//Init session store
 	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("ignite", store))
+	r.Use(sessions.Sessions("nlan", store))
 
 	self.router = r
 	self.db = utils.InitDB(utils.DB_Driver, utils.DB_Connect)

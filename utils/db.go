@@ -3,10 +3,10 @@ package utils
 import (
 	"log"
 
-	"github.com/go-ignite/ignite/models"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/mynet1314/nlan/models"
 )
 
 func InitDB(driver, connect string) *xorm.Engine {
