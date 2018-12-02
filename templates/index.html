@@ -24,9 +24,10 @@
     <div class="text-center" id="signup">
       <form class="form" id="signup-form" action="/signup" method="post">
         <h1>激活账号</h1>
-        <input type="text" placeholder="邀请码" name="invite-code">
-        <input type="text" placeholder="用户名" name="username">
-        <input type="password" placeholder="密码" name="password">
+        <input type="text" placeholder="邀请码(那一大串字母)" name="invite-code">
+        <input type="text" placeholder="用户名(后续可用来登录)" name="username">
+        <input type="email" placeholder="邮箱(后续可用来登录)" name="email">
+        <input type="password" placeholder="登录密码" name="password">
         <input type="password" placeholder="确认密码" name="confirm-password">
         <button id="signup-btn" class="common-btn">激活</button>
       </form>
@@ -34,7 +35,7 @@
     <div class="text-center" id="login">
       <form class="form" id="login-form" action="/login" method="post">
         <h1>用户登录</h1>
-        <input type="text" placeholder="用户名" name="username">
+        <input type="text" placeholder="用户名/邮箱" name="username">
         <input type="password" placeholder="密码" name="password">
         <button id="login-btn" class="common-btn">登录</button>
       </form>

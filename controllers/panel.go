@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
+	"strconv"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/mynet1314/nlan/models"
@@ -52,6 +52,11 @@ func (router *MainRouter) PanelIndexHandler(c *gin.Context) {
 		session.Save()
 
 		c.Redirect(http.StatusFound, "/")
+		return
+	}
+	if !user.EmailChecked {
+		c.Redirect(http.StatusFound, "/panel/email_check")
+		return
 	}
 
 	uInfo := &models.UserInfo{
@@ -98,8 +103,70 @@ func (router *MainRouter) LogoutHandler(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 }
 
+func (router *MainRouter) EmailConfirmHandler(c *gin.Context) {
+	// userId := strconv.Atoi(c.Query("id"))
+	userid := c.Query("id")
+	userId, _ := strconv.Atoi(userid)
+	code := c.Query("code")
+
+	user := new(models.User)
+	exists, _ := router.db.Id(userId).Get(user)
+	// TODO: 这里默认它就是合法的啦
+	fmt.Println("UserID...", user.Id, exists)
+	if user.EmailCheckCode == code {
+		user.EmailChecked = true
+		router.db.Id(userId).AllCols().Update(user)
+	}
+	c.HTML(http.StatusOK, "emailCheckComplete.html", gin.H{
+		"uInfo": 1,
+	})
+
+}
+func (router *MainRouter) EmailCheckHandler(c *gin.Context) {
+	userID, _ := c.Get("userId")
+
+	if userID == nil {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+		return
+	}
+	user := new(models.User)
+	exists, _ := router.db.Id(userID).Get(user)
+
+	if !exists {
+		//Service has been removed by admininistrator.
+		session := sessions.Default(c)
+		session.Delete("userId")
+		session.Save()
+
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+		return
+	}
+
+	c.HTML(http.StatusOK, "emailCheck.html", gin.H{
+		"uInfo":       1,
+		"email": user.Email})
+
+}
+
 func (router *MainRouter) CreateServiceHandler(c *gin.Context) {
 	userID, _ := c.Get("userId")
+	user := new(models.User)
+	exists, _ := router.db.Id(userID).Get(user)
+
+	if !exists {
+		//Service has been removed by admininistrator.
+		session := sessions.Default(c)
+		session.Delete("userId")
+		session.Save()
+
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+	if !user.EmailChecked {
+		c.Redirect(http.StatusFound, "/panel/email_check")
+		return
+	}
+
 	method := c.PostForm("method")
 	serverType := c.PostForm("server-type")
 
@@ -120,8 +187,6 @@ func (router *MainRouter) CreateServiceHandler(c *gin.Context) {
 		return
 	}
 
-	user := new(models.User)
-	router.db.Id(userID).Get(user)
 	if user.ServiceId != "" {
 		resp := models.Response{Success: false, Message: "服务已创建!"}
 		c.JSON(http.StatusOK, resp)

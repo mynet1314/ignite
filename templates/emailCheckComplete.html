@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{ template "commonHeader.html" .}}
+    <link href="/static/css/dropdown.css" rel="stylesheet">
+    <link href="/static/css/progress-bar.css" rel="stylesheet">
+</head>
+
+<body id="top" class="font-hei">
+
+    {{ template "nav.html" .}}
+
+    <div class="wrapper">
+        <div class="hero">
+            <div class="container">
+              <div class="card">
+                <div class="card-header">校验Email(电子邮件)成功</div>
+                <div class="card-body">
+                  校验电子邮件完成，现在您可以进行<a class="btn btn-success" href="/panel/index">创建服务</a>的操作啦。<br /><br />
+                  新用户注册赠送一个月(10G流量)的网络加速服务。<br />
+                  后续需要您以捐赠的形式获取服务，具体见捐赠条款。<br /><br />
+                  极少数情况下您可能需要重新登录。<br />
+                  
+                </div> 
+            </div>
+              </div>
+            </div>
+        </div>
+
+        <ul class="bg-bubbles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+
+        {{ template "commonFooter.html" .}}
+        <script src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+        <script src="https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js"></script>
+        <script src="/static/js/panel.js"></script>
+
+         
+            </div>
+          </div>
+        </div>
+</body>
+
+</html>

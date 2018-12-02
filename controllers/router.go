@@ -27,6 +27,7 @@ func (self *MainRouter) Initialize(r *gin.Engine) {
 	self.router = r
 	self.db = utils.InitDB(utils.DB_Driver, utils.DB_Connect)
 	self.router.GET("/", self.IndexHandler)
+	self.router.POST("/email_resend", self.ResendEmailHandler)
 	self.router.POST("/login", self.LoginHandler)
 	self.router.POST("/signup", self.SignupHandler)
 
@@ -36,6 +37,8 @@ func (self *MainRouter) Initialize(r *gin.Engine) {
 		pg.GET("/index", self.PanelIndexHandler)
 		pg.GET("/logout", self.LogoutHandler)
 		pg.POST("/create", self.CreateServiceHandler)
+		pg.GET("/email_check", self.EmailCheckHandler)
+		pg.GET("/email_confirm", self.EmailConfirmHandler)
 	}
 
 	go func() {

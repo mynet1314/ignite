@@ -5,6 +5,9 @@ import "time"
 type User struct {
 	Id              int64 `xorm:"pk autoincr notnull"`
 	Username        string
+	Email           string
+	EmailChecked    bool
+	EmailCheckCode  string
 	HashedPwd       []byte `xorm:"blob"`
 	InviteCode      string
 	PackageLimit    int        `xorm:"not null"` //Package bandwidth limit, unit: GB
@@ -26,6 +29,7 @@ type UserInfo struct {
 	Id                 int64
 	Host               string
 	Username           string
+	Email           string
 	Status             int
 	PackageLimit       int
 	PackageUsed        string

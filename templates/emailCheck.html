@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{ template "commonHeader.html" .}}
+    <link href="/static/css/dropdown.css" rel="stylesheet">
+    <link href="/static/css/progress-bar.css" rel="stylesheet">
+</head>
+
+<body id="top" class="font-hei">
+
+    {{ template "nav.html" .}}
+
+    <div class="wrapper">
+        <div class="hero">
+            <div class="container">
+              <div class="card">
+                <div class="card-header">校验Email(电子邮件)</div>
+                <div class="card-body">
+                  一封邮件已经发送到 <em>{{.email}}</em>，请注意查收!<br /><br />
+                  为了给您提供更全面的服务，我们需要校验您的电子邮件。<br />
+                  在您完成电子邮件校验之前您将不能进行任何有效操作，敬请谅解！
+                </div> 
+                <div class="card-footer">没有收到校验邮件？<button id="resend" type="button" class="btn btn-primary">重新发送</button> 或 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#EmailChangeModal">
+ 更改邮箱
+</button></div>
+              </div>
+            </div>
+        </div>
+
+        <ul class="bg-bubbles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+
+        {{ template "commonFooter.html" .}}
+        <script src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+        <script src="https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js"></script>
+        <script src="/static/js/panel.js"></script>
+        <script>
+          function resend_email(email) {
+            console.log("resend_email", email)
+            $.post("/email_resend", {email:email}, function (data) {
+                if (data.success) {
+                    toastr.warning("发送邮件成功!");
+                } else {
+                    toastr.warning(data.message);
+                    return false;
+                }
+            }, "json");
+          }
+          $('#resend').on('click',function () {
+            resend_email("")
+          })
+        </script>
+        <div class="modal fade" id="EmailChangeModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+         
+        <div class="text-center bg-info" >
+          <form class="form" action="/email_resend" method="post">
+            <input type="text" placeholder="请输入新邮箱" name="email">
+            <button id="login-btn" class="common-btn">更改并重新发送</button>
+          </form>
+        </div>
+
+         
+            </div>
+          </div>
+        </div>
+</body>
+
+</html>
