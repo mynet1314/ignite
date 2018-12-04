@@ -26,7 +26,7 @@ func InitDB(driver, connect string) *xorm.Engine {
 		log.Fatalln("Cannot connetc to database:", err.Error())
 	}
 
-	err = engine.Sync2(new(models.User), new(models.InviteCode))
+	err = engine.Sync2(new(models.User), new(models.InviteCode), new(models.Donate))
 	if err != nil {
 		log.Fatalln("Failed to sync database struct:", err.Error())
 	}

@@ -2,15 +2,16 @@ package controllers
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"strings"
-	"strconv"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/mynet1314/nlan/models"
 	"github.com/mynet1314/nlan/ss"
 	"github.com/mynet1314/nlan/utils"
+	"log"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var (
@@ -103,6 +104,132 @@ func (router *MainRouter) LogoutHandler(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 }
 
+func (router *MainRouter) DonateHandler(c *gin.Context) {
+	userID, exists := c.Get("userId")
+
+	if !exists {
+		c.HTML(http.StatusOK, "panel.html", nil)
+		return
+	}
+
+	user := new(models.User)
+	exists, _ = router.db.Id(userID).Get(user)
+
+	if !exists {
+		//Service has been removed by admininistrator.
+		session := sessions.Default(c)
+		session.Delete("userId")
+		session.Save()
+
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+	if !user.EmailChecked {
+		c.Redirect(http.StatusFound, "/panel/email_check")
+		return
+	}
+
+	c.HTML(http.StatusOK, "donate.html", gin.H{
+		"uInfo": 1,
+	})
+
+}
+
+func (router *MainRouter) ActualDonateHandler(c *gin.Context) {
+	month, _ := strconv.Atoi(c.PostForm("month"))
+	donate_type, _ := strconv.Atoi(c.PostForm("donate_type"))
+
+	if month <= 0 {
+		resp := models.Response{Success: false, Message: "请选择一个捐助时间!"}
+		c.JSON(http.StatusOK, &resp)
+		return
+	}
+	nickname := c.PostForm("nickname")
+	if strings.Trim(nickname, " ") == "" {
+		resp := models.Response{Success: false, Message: "请输入微信或支付宝昵称!"}
+		c.JSON(http.StatusOK, &resp)
+		return
+	}
+	userID, exists := c.Get("userId")
+
+	if !exists {
+		resp := models.Response{Success: false, Message: "后台宝宝找不到你啦，请联系管理员!"}
+		c.JSON(http.StatusOK, &resp)
+		return
+	}
+
+	user := new(models.User)
+	exists, _ = router.db.Id(userID).Get(user)
+
+	if !exists {
+		//Service has been removed by admininistrator.
+		session := sessions.Default(c)
+		session.Delete("userId")
+		session.Save()
+
+		resp := models.Response{Success: false, Message: "太长时间没操作啦，请重新登录!"}
+		c.JSON(http.StatusOK, &resp)
+		return
+	}
+
+	donate := new(models.Donate)
+	//Create user account
+	trans := router.db.NewSession()
+	defer trans.Close()
+
+	trans.Begin()
+
+	//1.Create user account
+	donate.Nickname = nickname
+	donate.DonateType = donate_type
+	donate.Month = month
+	donate.Created = time.Now()
+
+	affected, err := trans.Insert(donate)
+
+	if affected == 0 {
+		trans.Rollback()
+		fmt.Println("Failed to create donate record!", err)
+		c.JSON(http.StatusOK, &models.Response{Success: false, Message: "捐赠记录创建失败，请联系管理员"})
+		return
+	}
+	if err := trans.Commit(); err != nil {
+		fmt.Println("Failed to create donate record 2!")
+		c.JSON(http.StatusOK, &models.Response{Success: false, Message: "捐赠记录创建失败，请联系管理员"})
+		return
+	}
+
+	now := time.Now()
+	// 如果服务已经到期了
+	if user.Expired.Before(now) {
+		// 直接将过期时间加多少天
+		user.Expired = now.AddDate(0, month, 0)
+	} else {
+		// 不然就直接在当前的过期时间上加上一个时间
+		user.Expired = user.Expired.AddDate(0, month, 0)
+	}
+
+	if user.ServiceId != "" {
+		if user.Status == 2 || !ss.IsContainerRunning(user.ServiceId) {
+			if err := ss.StartContainer(user.ServiceId); err != nil {
+				resp := models.Response{Success: false, Message: "启动服务失败，请联系管理员!"}
+				c.JSON(http.StatusOK, &resp)
+				return
+			}
+			user.Status = 1
+		}
+	}
+
+	if _, err := router.db.Id(userID).Cols("expired", "status").Update(user); err != nil {
+		resp := models.Response{Success: false, Message: "更新服务状态失败，请联系管理员!"}
+		c.JSON(http.StatusOK, &resp)
+		return
+	}
+
+	resp := models.Response{Success: true, Message: "success"}
+	c.JSON(http.StatusOK, resp)
+}
+
 func (router *MainRouter) EmailConfirmHandler(c *gin.Context) {
 	// userId := strconv.Atoi(c.Query("id"))
 	userid := c.Query("id")
@@ -143,7 +270,7 @@ func (router *MainRouter) EmailCheckHandler(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "emailCheck.html", gin.H{
-		"uInfo":       1,
+		"uInfo": 1,
 		"email": user.Email})
 
 }

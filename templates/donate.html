@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{ template "commonHeader.html" .}}
+    <link href="/static/css/dropdown.css" rel="stylesheet">
+    <link href="/static/css/progress-bar.css" rel="stylesheet">
+</head>
+
+<body id="top" class="font-hei">
+
+    {{ template "nav.html" .}}
+
+    <div class="wrapper">
+        <div class="hero">
+            <div class="container text-center">
+
+                <form id="donate-form" action="/panel/actual_donate" method="post">
+                    <h1>捐助</h1>
+                    <span class="custom-dropdown big">
+                        <select id="donate-type" name="donate_type">
+                            <option value="0">微信</option>
+                            <option value="1">支付宝</option>
+                        </select>
+                    </span>
+                    <br/>
+                    <span class="big">
+                    <input id="custom-input" type="text" placeholder="微信/支付宝昵称" name="nickname">
+                    </span>
+                    <br/>
+                    <span class="custom-dropdown big">
+                        <select id="month" name="month">
+                            <option value="0">请选择捐助金额</option>
+                            <option value="3">30(至少三个月时长)</option>
+                            <option value="6">50(至少六个月时长)</option>
+                            <option value="12">90(至少一年时长)</option>
+                        </select>
+                    </span>
+                    <br/>
+                    <span id="wechat-qr">
+                      <img src="/static/images/wechat.png" >
+                    </span>
+                    <span id="alipay-qr">
+                      <img src="/static/images/alipay.png" >
+                    </span>
+
+                    <br/>
+                    <br/>
+                    <button id="donate-btn" class="common-btn">确认</button>
+                </form>
+        </div>
+
+    </div>
+
+        {{ template "commonFooter.html" .}}
+        <script>
+            document.getElementById('wechat-qr').style.display = "";
+            document.getElementById('alipay-qr').style.display = "none";
+            $('#donate-type').on('change', function (e) {
+                if (this.value == 0) {
+                  document.getElementById('wechat-qr').style.display = "";
+                  document.getElementById('alipay-qr').style.display = "none";
+                } else if (this.value == 1) {
+                  document.getElementById('wechat-qr').style.display = "none";
+                  document.getElementById('alipay-qr').style.display = "";
+                }
+            });
+        
+
+        $('#donate-btn').on('click', function (e) {
+            $("#donate-btn").attr('disabled',true);
+            toastr.clear()
+            e.preventDefault();
+  
+            toastr.options = {
+              "timeOut": "500000", //展现时间
+              "extendedTimeOut": "100000",//加长展示时间
+              "closeButton": true,
+            };
+            var form = $('#donate-form');
+            var url = form.attr("action");
+            $.post(url, form.serialize(), function (data) {
+                if (data.success) {
+                    console.log("login successfully!");
+                    console.log(data);
+
+                    toastr.success("如果您想继续捐助，请刷新此页面!");
+                    toastr.success("捐助成功，到首页去看看时长有没有增加吧!");
+                    //window.location.href = '/panel/index';
+                } else {
+                    //Login failed
+                    $("#donate-btn").attr('disabled',false);
+                    toastr.warning(data.message);
+                    return false;
+                }
+            }, "json");
+        });
+
+        </script>
+</body>
+</html>

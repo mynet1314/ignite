@@ -1,23 +1,23 @@
 package controllers
 
 import (
-	"fmt"
 	"bytes"
-	"net/http"
-	"regexp"
-	"time"
-	"strings"
-	"encoding/hex"
-	"crypto/tls"
-	"golang.org/x/crypto/bcrypt"
 	"crypto/md5"
+	"crypto/tls"
+	"encoding/hex"
+	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/mynet1314/nlan/models"
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/gomail.v2"
-	"os"
-	"strconv"
 	"html/template"
+	"net/http"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func (router *MainRouter) IndexHandler(c *gin.Context) {
@@ -35,7 +35,7 @@ func (router *MainRouter) IndexHandler(c *gin.Context) {
 	}
 	user := new(models.User)
 	exists, _ := router.db.Id(userId).Get(user)
-	if (exists && !user.EmailChecked) {
+	if exists && !user.EmailChecked {
 		c.Redirect(http.StatusFound, "/panel/email_check")
 		return
 	}
@@ -51,7 +51,7 @@ func (router *MainRouter) LoginHandler(c *gin.Context) {
 	user := new(models.User)
 
 	email_matched, _ := regexp.MatchString("^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+", username)
-	if (email_matched) {
+	if email_matched {
 		router.db.Where("email = ?", username).Get(user)
 	} else {
 		router.db.Where("username = ?", username).Get(user)
@@ -79,10 +79,10 @@ func (router *MainRouter) LoginHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, &models.Response{Success: true, Message: "Success!"})
 }
 
-func MD5(text string) string{
-   ctx := md5.New()
-   ctx.Write([]byte(text))
-   return hex.EncodeToString(ctx.Sum(nil))
+func MD5(text string) string {
+	ctx := md5.New()
+	ctx.Write([]byte(text))
+	return hex.EncodeToString(ctx.Sum(nil))
 }
 
 func (router *MainRouter) ResendEmailHandler(c *gin.Context) {
@@ -149,10 +149,10 @@ func sendEmail(userid int64, email string, username string, checkcode string) {
 	var doc bytes.Buffer
 	tmpl, err := template.ParseFiles("templates/email_confirm.html")
 	tmpl.Execute(&doc, struct {
-		Userid	int64
-		Code	string
+		Userid   int64
+		Code     string
 		Username string
-		WebSite string
+		WebSite  string
 	}{
 		userid,
 		checkcode,
@@ -166,7 +166,7 @@ func sendEmail(userid int64, email string, username string, checkcode string) {
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
-	    panic(err)
+		panic(err)
 	}
 }
 
@@ -182,7 +182,7 @@ func (router *MainRouter) SignupHandler(c *gin.Context) {
 	pwd := c.PostForm("password")
 	confirmPwd := c.PostForm("confirm-password")
 
-	username_len := strings.Count(username,"") - 1
+	username_len := strings.Count(username, "") - 1
 
 	if username_len < 3 || username_len > 10 {
 		fmt.Println("Username is invalid!", username)
@@ -225,7 +225,7 @@ func (router *MainRouter) SignupHandler(c *gin.Context) {
 	iv := new(models.InviteCode)
 	router.db.Where("invite_code = ? AND available = 1", inviteCode).Get(iv)
 
-	fmt.Println("gen checkcode", MD5(username + email))
+	fmt.Println("gen checkcode", MD5(username+email))
 	if iv.Id == 0 {
 		fmt.Println("Invalid invite code!")
 		c.JSON(http.StatusOK, &models.Response{Success: false, Message: "邀请码无效"})

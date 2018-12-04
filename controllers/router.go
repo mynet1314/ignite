@@ -39,6 +39,8 @@ func (self *MainRouter) Initialize(r *gin.Engine) {
 		pg.POST("/create", self.CreateServiceHandler)
 		pg.GET("/email_check", self.EmailCheckHandler)
 		pg.GET("/email_confirm", self.EmailConfirmHandler)
+		pg.GET("/donate", self.DonateHandler)
+		pg.POST("/actual_donate", self.ActualDonateHandler)
 	}
 
 	go func() {
